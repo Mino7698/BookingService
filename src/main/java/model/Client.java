@@ -1,25 +1,25 @@
 package model;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import java.util.Objects;
-
 @Getter
 @EqualsAndHashCode
+@Builder
 
 public class Client {
     private final int id;
-    private final String first_name;
-    private final String last_name;
+    private final String firstName;
+    private final String lastName;
     private final String email;
     private final String gender;
     private final String country;
 
-    public  Client(int id, String first_name, String last_name, String email, String gender, String country){
+    public  Client(int id, String firstName, String lastName, String email, String gender, String country){
      this.id=id;
-     this.first_name=first_name;
-     this.last_name=last_name;
+     this.firstName =firstName;
+     this.lastName =lastName;
      this.email=email;
      this.gender=gender;
      this.country=country;
@@ -29,8 +29,8 @@ public class Client {
     public String toString() {
         return '\n' + "Client{" +
                 "id=" + id +
-                ", first_name='" + first_name + '\'' +
-                ", last_name='" + last_name + '\'' +
+                ", first_name='" + firstName + '\'' +
+                ", last_name='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", gender='" + gender + '\'' +
                 ", country='" + country + '\'' +

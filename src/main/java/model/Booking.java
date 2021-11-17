@@ -1,5 +1,6 @@
 package model;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -7,6 +8,7 @@ import java.util.Objects;
 
 @Getter
 @EqualsAndHashCode
+@Builder
 
 public class Booking {
     private final int id;

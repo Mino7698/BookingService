@@ -44,7 +44,7 @@ public class BookingInformation {
         List<Apartment> result = new ArrayList<>();
         try (Connection connection = ConnectingToMyDatabase.getConnection(); Statement stmt = connection.createStatement()) {
             ResultSet apartmentRS = stmt.executeQuery("SELECT * FROM apartment");
-            result = ParsingUtil.parsingOfApartments(apartmentRS,1,2,3,4,5,6);
+            result = ParsingUtil.parsingOfApartments(apartmentRS);
         } catch (SQLException ex) {
             Logger.getLogger(ConnectingToMyDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -55,31 +55,31 @@ public class BookingInformation {
         List<Client> result = new ArrayList<>();
         try (Connection connection = ConnectingToMyDatabase.getConnection(); Statement stmt = connection.createStatement()) {
             ResultSet clientRS = stmt.executeQuery("SELECT * FROM client");
-            result = ParsingUtil.parsingOfClients(clientRS,1,2,3,4,5,6);
+            result = ParsingUtil.parsingOfClients(clientRS);
         } catch (SQLException ex) {
             Logger.getLogger(ConnectingToMyDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result;
     }
 
-    public List<Apartment> availableApartmentsForTheSelectedDate(String date) throws SQLException {
+    public List<Apartment> getAvailableApartmentsForTheSelectedDate(String date) throws SQLException {
         List<Apartment> result = new ArrayList<>();
         try (Connection connection = ConnectingToMyDatabase.getConnection(); Statement stmt = connection.createStatement()) {
-            ResultSet bookingRS = stmt.executeQuery("select * from apartment left join booking on booking.apartment_id = apartment.id where start_date_of_booking > '" + date + "' or finish_date_of_booking < '" + date + "'" +
-                    "order by apartment_id asc;");
-            result = ParsingUtil.parsingOfApartments(bookingRS,1,2,3,4,5,6);
+            ResultSet bookingRS = stmt.executeQuery("select apartment.id, apartment.country, apartment.city, apartment.street_adress, apartment.apartment_number, apartment.price from apartment left join " +
+                    "booking on booking.apartment_id = apartment.id where start_date_of_booking > '" + date + "' or finish_date_of_booking < '" + date + "' order by apartment_id asc;");
+            result = ParsingUtil.parsingOfApartments(bookingRS);
         } catch (SQLException ex) {
             Logger.getLogger(ConnectingToMyDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result;
     }
 
-    public List<Apartment> customerOrdersWithSelectedId(int clientID) throws SQLException {
+    public List<Apartment> getCustomerOrdersWithSelectedId(int clientID) throws SQLException {
         List<Apartment> result = new ArrayList<>();
         try (Connection connection = ConnectingToMyDatabase.getConnection(); Statement stmt = connection.createStatement()) {
-            ResultSet bookingRS = stmt.executeQuery("SELECT * FROM booking inner join apartment " +
-                    " on booking.apartment_id = apartment.id where client_id =" + clientID);
-            result = ParsingUtil.parsingOfApartments(bookingRS,3,7,8,9,10,11);
+            ResultSet bookingRS = stmt.executeQuery("SELECT apartment.id, apartment.country, apartment.city, apartment.street_adress, apartment.apartment_number, apartment.price FROM " +
+                    "apartment inner join booking on booking.apartment_id = apartment.id where client_id =" + clientID);
+            result = ParsingUtil.parsingOfApartments(bookingRS);
         } catch (SQLException ex) {
             Logger.getLogger(ConnectingToMyDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }

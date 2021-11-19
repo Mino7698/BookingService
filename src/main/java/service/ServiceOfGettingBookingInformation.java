@@ -4,22 +4,15 @@ import model.Apartment;
 import model.Client;
 import util.ConnectingToMyDatabase;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BookingInformation {
+public class ServiceOfGettingBookingInformation {
 
-    public BookingInformation() {
-    }
-
-
-    public void setBooking(int clientId, int apartmentId, String startDateOfBooking, String finishDateOfBooking) throws SQLException {
+    public void setBooking(int clientId, int apartmentId, String startDateOfBooking, String finishDateOfBooking){
         try (Connection connection = ConnectingToMyDatabase.getConnection(); Statement stmt = connection.createStatement()) {
             stmt.executeUpdate("do $$\n" +
                     "begin\n" +
@@ -40,7 +33,7 @@ public class BookingInformation {
         }
     }
 
-    public List<Apartment> getAllApartments() throws SQLException {
+    public List<Apartment> getAllApartments(){
         List<Apartment> result = new ArrayList<>();
         try (Connection connection = ConnectingToMyDatabase.getConnection(); Statement stmt = connection.createStatement()) {
             ResultSet apartmentRS = stmt.executeQuery("SELECT * FROM apartment");
@@ -51,7 +44,7 @@ public class BookingInformation {
         return result;
     }
 
-    public List<Client> getAllClients() throws SQLException {
+    public List<Client> getAllClients(){
         List<Client> result = new ArrayList<>();
         try (Connection connection = ConnectingToMyDatabase.getConnection(); Statement stmt = connection.createStatement()) {
             ResultSet clientRS = stmt.executeQuery("SELECT * FROM client");
@@ -62,11 +55,14 @@ public class BookingInformation {
         return result;
     }
 
-    public List<Apartment> getAvailableApartmentsForTheSelectedDate(String date) throws SQLException {
+    public List<Apartment> getAvailableApartmentsForTheSelectedDate(String date){
         List<Apartment> result = new ArrayList<>();
-        try (Connection connection = ConnectingToMyDatabase.getConnection(); Statement stmt = connection.createStatement()) {
-            ResultSet bookingRS = stmt.executeQuery("select apartment.id, apartment.country, apartment.city, apartment.street_adress, apartment.apartment_number, apartment.price from apartment left join " +
-                    "booking on booking.apartment_id = apartment.id where start_date_of_booking > '" + date + "' or finish_date_of_booking < '" + date + "' order by apartment_id asc;");
+        String sql = "select apartment.id, apartment.country, apartment.city, apartment.street_adress, apartment.apartment_number, apartment.price from apartment left join " +
+                "booking on booking.apartment_id = apartment.id where start_date_of_booking > (CAST (? AS DATE)) or finish_date_of_booking < (CAST (? AS DATE)) order by apartment_id asc";
+        try (Connection connection = ConnectingToMyDatabase.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1,date);
+            stmt.setString(2,date);
+            ResultSet bookingRS = stmt.executeQuery();
             result = ParsingUtil.parsingOfApartments(bookingRS);
         } catch (SQLException ex) {
             Logger.getLogger(ConnectingToMyDatabase.class.getName()).log(Level.SEVERE, null, ex);
@@ -74,11 +70,13 @@ public class BookingInformation {
         return result;
     }
 
-    public List<Apartment> getCustomerOrdersWithSelectedId(int clientID) throws SQLException {
+    public List<Apartment> getCustomersOrdersWithSelectedId(int clientID){
         List<Apartment> result = new ArrayList<>();
-        try (Connection connection = ConnectingToMyDatabase.getConnection(); Statement stmt = connection.createStatement()) {
-            ResultSet bookingRS = stmt.executeQuery("SELECT apartment.id, apartment.country, apartment.city, apartment.street_adress, apartment.apartment_number, apartment.price FROM " +
-                    "apartment inner join booking on booking.apartment_id = apartment.id where client_id =" + clientID);
+        String sql = "SELECT apartment.id, apartment.country, apartment.city, apartment.street_adress, apartment.apartment_number, apartment.price FROM " +
+                "apartment inner join booking on booking.apartment_id = apartment.id where client_id = ?";
+        try (Connection connection = ConnectingToMyDatabase.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1,clientID);
+            ResultSet bookingRS = stmt.executeQuery();
             result = ParsingUtil.parsingOfApartments(bookingRS);
         } catch (SQLException ex) {
             Logger.getLogger(ConnectingToMyDatabase.class.getName()).log(Level.SEVERE, null, ex);

@@ -1,32 +1,3 @@
-create database booking_project encoding 'UTF-8';
-
-create table if not exists apartment (
-	id SERIAL PRIMARY KEY,
-	country VARCHAR(50) NOT NULL,
-	city VARCHAR(50) NOT NULL,
-	street_adress VARCHAR(50) NOT NULL,
-	apartment_number INT NOT NULL,
-	price VARCHAR(50) NOT NULL
-);
-
-create table if not exists client (
-	id SERIAL PRIMARY KEY,
-	first_name VARCHAR(50) NOT NULL,
-	last_name VARCHAR(50) NOT NULL, 
-	email VARCHAR(50),
-	gender VARCHAR(50) NOT NULL,
-	country VARCHAR(50)
-);
-
-create table if not exists booking (
-    id BIGSERIAL,
-	client_id integer not null references client(id),
-	apartment_id integer not null references apartment(id),
-	start_date_of_booking DATE not null,
-	finish_date_of_booking DATE not null,
-	constraint booking_pk primary key (client_id,apartment_id,start_date_of_booking)
-);
-
 insert into apartment (id, country, city, street_adress, apartment_number, price) values (1, 'United States', 'Newport News', '26 Crowley Plaza', 51, '$1422.62');
 insert into apartment (id, country, city, street_adress, apartment_number, price) values (2, 'Malaysia', 'Kuala Lumpur', '7216 Warner Road', 24, '$223.77');
 insert into apartment (id, country, city, street_adress, apartment_number, price) values (3, 'Philippines', 'Pambuhan', '6 Mosinee Parkway', 40, '$3452.52');

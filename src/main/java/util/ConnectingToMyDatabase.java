@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 public class ConnectingToMyDatabase {
     private static Connection con;
+    private ConnectingToMyDatabase() {throw new IllegalStateException("Utility class");}
 
     public static Connection getConnection(){
             try {

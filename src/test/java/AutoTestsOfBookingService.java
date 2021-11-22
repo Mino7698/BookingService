@@ -1,6 +1,6 @@
 import model.Apartment;
 import org.junit.*;
-import service.ServiceOfGettingBookingInformation;
+import service.BookingService;
 import util.ConnectingToMyDatabase;
 
 import java.io.IOException;
@@ -9,13 +9,16 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AutoTestsOfBookingService {
-    static ServiceOfGettingBookingInformation BookingInformation = new ServiceOfGettingBookingInformation();
+    static BookingService BookingInformation = new BookingService();
     static List<Apartment> testListOfGettingCustomerOrdersWithSelectedId = new ArrayList<>();
 
     @BeforeClass
@@ -81,19 +84,19 @@ public class AutoTestsOfBookingService {
 
     @Test
     public void testOfGettingNumberOfAvailableApartmentsForTheSelectedDate01_07_2001() throws SQLException {
-        Assert.assertEquals(4, BookingInformation.getAvailableApartmentsForTheSelectedDate("01-07-2001").size());
+        Assert.assertEquals(4, BookingInformation.getAvailableApartmentsForTheSelectedDate(LocalDate.of(2001,7,1)).size());
     }
     @Test
     public void testOfGettingNumberOfAvailableApartmentsForTheSelectedDate01_07_2007() throws SQLException {
-        Assert.assertEquals(5, BookingInformation.getAvailableApartmentsForTheSelectedDate("01-07-2007").size());
+        Assert.assertEquals(5, BookingInformation.getAvailableApartmentsForTheSelectedDate(LocalDate.of(2007,7,1)).size());
     }
     @Test
     public void testOfGettingNumberOfAvailableApartmentsForTheSelectedDate01_07_2009() throws SQLException {
-        Assert.assertEquals(5, BookingInformation.getAvailableApartmentsForTheSelectedDate("01-07-2009").size());
+        Assert.assertEquals(5, BookingInformation.getAvailableApartmentsForTheSelectedDate(LocalDate.of(2009,7,1)).size());
     }
     @Test
     public void testOfGettingNumberOfAvailableApartmentsForTheSelectedDate01_07_2100() throws SQLException {
-        Assert.assertEquals(6, BookingInformation.getAvailableApartmentsForTheSelectedDate("01-07-2100").size());
+        Assert.assertEquals(6, BookingInformation.getAvailableApartmentsForTheSelectedDate(LocalDate.of(2100,7,1)).size());
     }
 
     @Test

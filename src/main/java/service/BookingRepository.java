@@ -4,10 +4,7 @@ import model.Apartment;
 import model.Client;
 import util.ConnectingToMyDatabase;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -17,7 +14,7 @@ public class BookingRepository {
 
 
 
-    public static void setBooking(int clientId, int apartmentId, String startDateOfBooking, String finishDateOfBooking){
+    public static void createBooking(int clientId, int apartmentId, String startDateOfBooking, String finishDateOfBooking){
         try (Connection connection = ConnectingToMyDatabase.getConnection(); Statement stmt = connection.createStatement()) {
             stmt.executeUpdate("do $$\n" +
                     "begin\n" +
@@ -36,6 +33,7 @@ public class BookingRepository {
         } catch (SQLException ex) {
             Logger.getLogger(ConnectingToMyDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     public static List<Apartment> parsingOfApartments (ResultSet resultSet, int  id, int country, int city, int streetAdress, int apartmentNumber , int price) throws SQLException {

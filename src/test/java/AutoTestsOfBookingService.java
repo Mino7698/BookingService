@@ -104,4 +104,9 @@ public class AutoTestsOfBookingService {
         Assert.assertEquals(testListOfGettingCustomerOrdersWithSelectedId, BookingInformation.getCustomersOrdersWithSelectedId(2));
     }
 
+    @Test
+    public void testOfCreatingBooking() throws SQLException {
+        BookingInformation.createBooking(10, 5, "07-01-2015", "02-06-2016");
+    }
+
 }

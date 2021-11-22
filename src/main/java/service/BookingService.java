@@ -6,7 +6,6 @@ import util.ConnectingToMyDatabase;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -14,9 +13,8 @@ import java.util.logging.Logger;
 
 public class BookingService {
 
-    public void setBooking(int clientId, int apartmentId, String startDateOfBooking, String finishDateOfBooking){
-        BookingService bookingInformation = new BookingService();
-        bookingInformation.setBooking(clientId,apartmentId, startDateOfBooking, finishDateOfBooking);
+    public void createBooking(int clientId, int apartmentId, String startDateOfBooking, String finishDateOfBooking){
+       BookingRepository.createBooking(clientId,apartmentId, startDateOfBooking, finishDateOfBooking);
     }
 
     public List<Apartment> getAllApartments(){

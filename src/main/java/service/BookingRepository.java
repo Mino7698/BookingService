@@ -2,13 +2,42 @@ package service;
 
 import model.Apartment;
 import model.Client;
+import util.ConnectingToMyDatabase;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class ParsingUtil {
+public class BookingRepository {
+
+
+
+    public static void setBooking(int clientId, int apartmentId, String startDateOfBooking, String finishDateOfBooking){
+        try (Connection connection = ConnectingToMyDatabase.getConnection(); Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate("do $$\n" +
+                    "begin\n" +
+                    "IF NOT EXISTS (\n" +
+                    "   SELECT FROM booking\n" +
+                    "   WHERE (apartment_id = " + apartmentId + " " +
+                    "   and ((start_date_of_booking <= '" + startDateOfBooking + "' and finish_date_of_booking >= '" + startDateOfBooking + "')" +
+                    "   or (start_date_of_booking <= '" + finishDateOfBooking + "' and finish_date_of_booking >= '" + finishDateOfBooking + "')))\n" +
+                    ") \n" +
+                    "THEN\n" +
+                    "insert into booking (client_id, apartment_id, start_date_of_booking, finish_date_of_booking) " +
+                    "values (" + clientId + "," + apartmentId + ",'" + startDateOfBooking + "','" + finishDateOfBooking + "');\n" +
+                    "END IF;\n" +
+                    "end;\n" +
+                    "$$;");
+        } catch (SQLException ex) {
+            Logger.getLogger(ConnectingToMyDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public static List<Apartment> parsingOfApartments (ResultSet resultSet, int  id, int country, int city, int streetAdress, int apartmentNumber , int price) throws SQLException {
         final List<Apartment> result = new ArrayList<>();
         while (resultSet.next()) {

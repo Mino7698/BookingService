@@ -1,7 +1,7 @@
 import model.Apartment;
 import org.junit.*;
+import service.BookingRepository;
 import service.BookingService;
-import util.ConnectingToMyDatabase;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,23 +11,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AutoTestsOfBookingService {
-    static BookingService BookingInformation = new BookingService();
-    static List<Apartment> testListOfGettingCustomerOrdersWithSelectedId = new ArrayList<>();
+import static java.util.Arrays.asList;
 
-    @BeforeClass
-    public static void creatingListOfApartment() {
-        Apartment apartmentId4 = Apartment.builder().id(4).country("Portugal").city("São Pedro do Estoril").streetAdress("8 Springview Hill").apartmentNumber(48).price(2030).build();
-        Apartment apartmentId6 = Apartment.builder().id(6).country("Bangladesh").city("Mirzāpur").streetAdress("9067 Eastwood Street").apartmentNumber(77).price(300).build();
-        testListOfGettingCustomerOrdersWithSelectedId.add(apartmentId4);
-        testListOfGettingCustomerOrdersWithSelectedId.add(apartmentId6);
-    }
+public class AutoTestsOfBookingService {
+    static BookingRepository bookingRepository = new BookingRepository();
+    static BookingService BookingInformation = new BookingService(bookingRepository);
+    static List<Apartment> testListOfGettingCustomerOrdersWithSelectedId = new ArrayList<>();
 
     @BeforeClass
     public static void beforeClass() throws IOException {
@@ -38,11 +31,11 @@ public class AutoTestsOfBookingService {
         List<String> strCreateRows = Files.readAllLines(Paths.get("src/main/resources/CreateRows.sql"));
         String sqlCreateRows = String.join("", strCreateRows);
 
-        try (Connection connection = ConnectingToMyDatabase.getConnection(); Statement stmt = connection.createStatement()) {
+        try (Connection connection = BookingRepository.getConnection(); Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(sqlCreateTables);
             stmt.executeUpdate(sqlCreateRows);
         } catch (SQLException ex) {
-            Logger.getLogger(ConnectingToMyDatabase.class.getName()).log(Level.WARNING, null, ex);
+            Logger.getLogger(BookingRepository.class.getName()).log(Level.WARNING, null, ex);
         }
     }
 
@@ -50,10 +43,10 @@ public class AutoTestsOfBookingService {
     public static void afterClass() throws IOException {
         List<String> strDropTables = Files.readAllLines(Paths.get("src/main/resources/DropTables.sql"));
         String sqlDropTables = String.join("", strDropTables);
-        try (Connection connection = ConnectingToMyDatabase.getConnection(); Statement stmt = connection.createStatement()) {
+        try (Connection connection = BookingRepository.getConnection(); Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(sqlDropTables);
         } catch (SQLException ex) {
-            Logger.getLogger(ConnectingToMyDatabase.class.getName()).log(Level.WARNING, null, ex);
+            Logger.getLogger(BookingRepository.class.getName()).log(Level.WARNING, null, ex);
         }
     }
 
@@ -101,7 +94,23 @@ public class AutoTestsOfBookingService {
 
     @Test
     public void testOfGettingCustomersOrdersWithSelectedId() throws SQLException {
-        Assert.assertEquals(testListOfGettingCustomerOrdersWithSelectedId, BookingInformation.getCustomersOrdersWithSelectedId(2));
+        Apartment apartmentId4 =   Apartment.builder()
+                .id(4)
+                .country("Portugal")
+                .city("São Pedro do Estoril")
+                .streetAdress("8 Springview Hill")
+                .apartmentNumber(48)
+                .price(2030)
+                .build();
+        Apartment apartmentId6 =   Apartment.builder()
+                .id(6)
+                .country("Bangladesh")
+                .city("Mirzāpur")
+                .streetAdress("9067 Eastwood Street")
+                .apartmentNumber(77)
+                .price(300)
+                .build();
+        Assert.assertEquals(asList(apartmentId4,apartmentId6), BookingInformation.getCustomersOrdersWithSelectedId(2));
     }
 
     @Test
